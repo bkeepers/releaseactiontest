@@ -1,0 +1,22 @@
+name: Publish Gem
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - "v**"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # mandatory for trusted publishing
+      contents: write # required for `rake release` to push the release tag
+    steps:
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: ruby
+      - name: Bump version
+        run: gem bump --push --version ${GITHUB_REF_NAME#v}
+      - uses: rubygems/release-gem@v1
